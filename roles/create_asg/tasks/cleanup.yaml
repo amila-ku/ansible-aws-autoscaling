@@ -1,0 +1,25 @@
+---
+#remove resources deleted
+
+- name: delete aws ec2 keypair | wp stack
+  ec2_key:
+    name: wp-stack-key
+    region: "{{ aws_region }}"
+    state: absent
+  tags: destroy
+
+- name: delete asg group | wp stack
+  ec2_asg:
+    name: wp_stack_asg
+    region: "{{ aws_region }}"
+    state: absent
+  tags: destroy
+
+- name: delete launch config | wp stack
+  ec2_lc:
+    name: wp_stack_lc
+    region: "{{ aws_region }}"
+    state: absent
+  tags: destroy
+
+
