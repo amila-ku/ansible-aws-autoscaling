@@ -1,0 +1,7 @@
+---
+# defaults file for create_asg
+
+aws_region: us-west-2
+aws_security_group: sg-2463a459
+aws_ami_id: ami-aa5ebdd2
+aws_instance_type: t2.large

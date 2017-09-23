@@ -1,0 +1,9 @@
+---
+#play book creating aws resources 
+#creates aws autoscaling group and launch configuration
+
+- hosts: localhost
+  connection: local
+
+  roles:
+    - create_asg
