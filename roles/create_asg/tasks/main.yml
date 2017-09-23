@@ -7,6 +7,13 @@
     region: "{{ aws_region }}"
   register: aws_keypair
 
+- name: save private key | wp stack
+  copy:
+    content: "{{ aws_keypair.key.private_key }}"
+    dest: "./keypair-wpstack.pem"
+    mode: "0600"
+  when: aws_keypair.changed
+
 
 - name: create launch config | wp stack
   ec2_lc:
@@ -16,9 +23,11 @@
     region: "{{ aws_region }}"
     security_groups: "{{ aws_security_group }}"
     instance_type: "{{ aws_instance_type }}"
+    user_data_path: "roles/create_asg/files/user_data.sh"
     assign_public_ip: yes
 
-- ec2_asg:
+- name: create auto scaling group | wp stack
+  ec2_asg:
     name: wp_stack_asg
     launch_config_name: wp_stack_lc
     health_check_period: 60
@@ -29,3 +38,6 @@
     desired_capacity: 1
     vpc_zone_identifier: ['subnet-7f4c9927', 'subnet-aad1bbce']
     region: "{{ aws_region }}"
+
+- include: cleanup.yaml
+  tags: destroy
