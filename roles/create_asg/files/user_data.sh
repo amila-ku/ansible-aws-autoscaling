@@ -8,4 +8,4 @@ sudo curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-c
 sudo chmod +x /usr/local/bin/docker-compose
 sudo git clone https://github.com/amila-ku/wordpress-prometheus.git /wp
 cd /wp
-docker compose up -d
+docker-compose up -d

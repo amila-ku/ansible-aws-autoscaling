@@ -15,7 +15,6 @@
     name: wp-stack-key
     region: "{{ aws_region }}"
   register: aws_keypair
-  when: not keyfile.stat.exists
 
 - name: save private key | wp stack
   copy:
@@ -33,7 +32,7 @@
     region: "{{ aws_region }}"
     security_groups: "{{ aws_security_group }}"
     instance_type: "{{ aws_instance_type }}"
-    user_data_path: "roles/create_asg/files/user_data.sh"
+    user_data_path: "roles/create_asg/files/user_data_ubuntu.sh"
     assign_public_ip: yes
 
 - name: create auto scaling group | wp stack
