@@ -1,11 +1,21 @@
 ---
 # tasks file for create_asg
 
+- name: check if the keyfile exists
+  stat:  
+    path: "./keypair-wpstack.pem"
+  register: keyfile
+
+- debug:
+    msg: keyfile exists
+  when: keyfile.stat.exists
+
 - name: create aws ec2 keypair | wp stack
   ec2_key:
     name: wp-stack-key
     region: "{{ aws_region }}"
   register: aws_keypair
+  when: not keyfile.stat.exists
 
 - name: save private key | wp stack
   copy:
