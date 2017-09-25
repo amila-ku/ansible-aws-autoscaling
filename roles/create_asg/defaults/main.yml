@@ -2,7 +2,8 @@
 # defaults file for create_asg
 
 aws_region: us-west-2
-aws_security_group: sg-2463a459
+aws_vpc_id: vpc-cbe7a2af
+aws_security_group: sg_wp_stack_public
 #aws_ami_id: ami-aa5ebdd2
 aws_ami_id: ami-6e1a0117
 aws_instance_type: t2.large

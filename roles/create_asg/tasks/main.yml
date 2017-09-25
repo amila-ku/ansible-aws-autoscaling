@@ -23,6 +23,24 @@
     mode: "0600"
   when: aws_keypair.changed
 
+#use of ports was introduced in ansible version 2.4, so if you are getting errors on this step please upgrade to ansible version 2.4
+- name: create security group | wp stack
+  ec2_group:
+    name: "{{ aws_security_group }}" 
+    description: wp stack security group with out side acccess enabled 
+    vpc_id: "{{ aws_vpc_id }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: tcp
+        ports: 22
+        cidr_ip: 10.0.0.0/8
+      - proto: tcp
+        ports:
+          - 8080
+          - 3000
+          - 9090
+        cidr_ip: 0.0.0.0/0
+
 
 - name: create launch config | wp stack
   ec2_lc:
@@ -47,6 +65,11 @@
     desired_capacity: 1
     vpc_zone_identifier: ['subnet-7f4c9927', 'subnet-aad1bbce']
     region: "{{ aws_region }}"
+  register: wp_stack_asg
+
+- debug:
+    var: wp_stack_asg
+
 
 - include: cleanup.yaml
   tags: destroy
