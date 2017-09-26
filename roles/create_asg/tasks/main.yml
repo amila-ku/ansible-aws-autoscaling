@@ -65,11 +65,26 @@
     desired_capacity: 1
     vpc_zone_identifier: ['subnet-7f4c9927', 'subnet-aad1bbce']
     region: "{{ aws_region }}"
-  register: wp_stack_asg
+    tags: 
+      - Name: wp_stack_asg
+      - env: dev
+        propagate_at_launch: true
+  register: wp_asg
 
-- debug:
-    var: wp_stack_asg
 
+- ec2_instance_facts:
+    filters:
+      "tag:Name": wp_stack_asg
+    region: "{{ aws_region }}"
+  register: ec2
+
+- name: Wait for 8080 to come up
+  wait_for:
+    host: "{{ ec2.instances[0].public_dns_name }}"
+    port: 8080
+    delay: 60
+    timeout: 320
+    state: started
 
 - include: cleanup.yaml
   tags: destroy
