@@ -22,6 +22,13 @@
     dest: "./keypair-wpstack.pem"
     mode: "0600"
   when: aws_keypair.changed
+  
+- iam_role:
+    name: wp_stack_prometheus_profile
+    assume_role_policy_document: "{{ lookup('file','roles/create_asg/files/trust-policy.json') }}"
+    state: present
+    managed_policy:
+      - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess 
 
 #use of ports was introduced in ansible version 2.4, so if you are getting errors on this step please upgrade to ansible version 2.4
 - name: create security group | wp stack
@@ -33,12 +40,13 @@
     rules:
       - proto: tcp
         ports: 22
-        cidr_ip: 10.0.0.0/8
+        cidr_ip: 0.0.0.0/0
       - proto: tcp
         ports:
           - 8080
           - 3000
           - 9090
+          - 9100
         cidr_ip: 0.0.0.0/0
 
 
@@ -50,6 +58,7 @@
     region: "{{ aws_region }}"
     security_groups: "{{ aws_security_group }}"
     instance_type: "{{ aws_instance_type }}"
+    instance_profile_name: wp_stack_prometheus_profile
     user_data_path: "roles/create_asg/files/user_data_ubuntu.sh"
     assign_public_ip: yes
 
@@ -74,6 +83,7 @@
 
 - ec2_instance_facts:
     filters:
+      instance-state-name: running
       "tag:Name": wp_stack_asg
     region: "{{ aws_region }}"
   register: ec2
@@ -94,13 +104,13 @@
   uri:
     url: "http://{{ ec2.instances[0].public_dns_name }}:8080"
     return_content: yes
+  ignore_errors: true
 
 - name: check grafana
   uri:
     url: "http://{{ ec2.instances[0].public_dns_name }}:3000"
     return_content: yes
-
-  
+  ignore_errors: true
 
 - include: cleanup.yaml
   tags: destroy
