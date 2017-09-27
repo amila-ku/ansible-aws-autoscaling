@@ -5,6 +5,13 @@ creates aws keypair to connect to the instance.
 ## Software requirements
 Ansible 2.4
 
+## Dependencies
+stack creation depends on below repository
+[wp_stack](https://github.com/amila-ku/wordpress-prometheus)
+
+using fixed ec2_lc for ansible 2.4
+[bug 30268](https://github.com/ansible/ansible/issues/30268)
+
 ## Check execution steps
 ```shell
 ansible-playbook create_aws_resources.yml --skip-tags "destroy" --check
