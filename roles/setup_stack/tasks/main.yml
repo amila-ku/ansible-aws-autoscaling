@@ -1,0 +1,64 @@
+---
+# tasks file for setup_stack
+
+- name: return motd to registered var
+  command: hostnamectl
+  register: data
+
+- debug:
+    var: data
+
+- name: install dependencies
+  apt: 
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+   - apt-transport-https
+   - ca-certificates
+   - software-properties-common
+   - curl
+
+- name: add an Apt signing key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: add repo
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+    state: present
+
+- name: Install docker ce
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+   - docker-ce
+   - git 
+
+- name: add ubuntu user to docker group
+  command: usermod -a -G docker ubuntu
+
+- name: start docker service
+  service: 
+    name: docker
+    state: started
+    enabled: true
+
+- name: download docker compose
+  get_url: 
+    url: https://github.com/docker/compose/releases/download/1.16.1/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+  mode: 0770
+
+- name: clone wp stack repo
+  git: 
+    repo: "https://github.com/amila-ku/wordpress-prometheus.git"
+    dest: /wp2
+
+- name: start the stack
+  shell: docker-compose up -d
+  args:
+    chdir: /wp2

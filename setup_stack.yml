@@ -1,0 +1,28 @@
+- hosts: localhost
+  connection: local
+  tasks:
+
+  - ec2_instance_facts:
+      filters:
+        instance-state-name: running
+        "tag:Name": wp_stack_asg
+      region: us-west-2
+    register: ec2
+
+  - debug:
+      var: ec2
+
+  - name: Add new instance to host group
+    add_host:
+      hostname: "{{ ec2.instances[0].public_dns_name }}"
+      groupname: launched
+
+
+
+- name: Configure instance(s)
+  hosts: launched
+  remote_user: ubuntu
+  become: True
+  gather_facts: True
+  roles:
+    - setup_stack
