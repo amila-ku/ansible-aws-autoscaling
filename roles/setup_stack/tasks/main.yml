@@ -1,7 +1,7 @@
 ---
 # tasks file for setup_stack
 
-- name: return motd to registered var
+- name: host information
   command: hostnamectl
   register: data
 
