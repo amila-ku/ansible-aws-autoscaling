@@ -38,6 +38,22 @@ Destroys resources created
 ansible-playbook create_aws_resources.yml --tags "destroy" 
 ```
 
+## How to use if not using userdata
+add a new userdata file with only installing python
+
+create aws resources
+
+```shell
+ansible-playbook create_aws_resources.yml --skip-tags "destroy"
+```
+
+run setup playbooks to configure stack
+
+```shell
+ansible-playbook setup_stack.yml --private-key=keypair-wpstack.pem
+```
+
+
 
 ### Disclaimer
 Ansible would throw errors on security group creation if the ansible version is less than 2.4. Please update your ansible version.
