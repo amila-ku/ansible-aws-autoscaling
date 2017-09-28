@@ -55,13 +55,15 @@ ansible-playbook setup_stack.yml --private-key=keypair-wpstack.pem
 
 
 
-### Disclaimer
-Ansible would throw errors on security group creation if the ansible version is less than 2.4. Please update your ansible version.
+### Important to read
+- Ansible would throw errors on security group creation if the ansible version is less than 2.4. Please update your ansible version.
+
+- subnets in vpc_zone_identifier should be changed before running relevent to your vpc, also ami and vpc id should be updated
 
 
-you would run into a bug in ansible version 2.4 when using ec2_lc
-[more details](https://github.com/ansible/ansible/issues/30268)
+- you would run into a bug in ansible version 2.4 when using ec2_lc
+  [more details](https://github.com/ansible/ansible/issues/30268)
 
-use below file to replace ec2_lc.py in your ansible installation
-file location : /usr/lib/python2.7/dist-packages/ansible/modules/cloud/amazon/ec2_lc.py
-replace with this https://raw.githubusercontent.com/ansible/ansible/stable-2.4/lib/ansible/modules/cloud/amazon/ec2_lc.py
+  use below file to replace ec2_lc.py in your ansible installation
+  file location : /usr/lib/python2.7/dist-packages/ansible/modules/cloud/amazon/ec2_lc.py
+  replace with this https://raw.githubusercontent.com/ansible/ansible/stable-2.4/lib/ansible/modules/cloud/amazon/ec2_lc.py
